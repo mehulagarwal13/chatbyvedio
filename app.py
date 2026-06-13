@@ -1,6 +1,8 @@
 import os
 import re
 import tempfile
+import requests
+from http.cookiejar import MozillaCookieJar
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -46,7 +48,11 @@ def load_video(req: LoadRequest):
             tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
             tmp.write(cookies_content)
             tmp.close()
-            ytt = YouTubeTranscriptApi(cookies=tmp.name)
+            jar = MozillaCookieJar(tmp.name)
+            jar.load(ignore_discard=True, ignore_expires=True)
+            session = requests.Session()
+            session.cookies = jar
+            ytt = YouTubeTranscriptApi(http_client=session)
         else:
             ytt = YouTubeTranscriptApi()
         try:

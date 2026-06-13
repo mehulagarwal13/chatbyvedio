@@ -1,7 +1,7 @@
 fastapi
 uvicorn[standard]
 python-dotenv
-youtube-transcript-api
+youtube-transcript-api==1.2.4
 langchain
 langchain-core
 langchain-community
