@@ -1,4 +1,3 @@
-import os
 import re
 from dotenv import load_dotenv
 load_dotenv()
@@ -9,7 +8,6 @@ from pydantic import BaseModel
 
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
-from youtube_transcript_api.proxies import WebshareProxyConfig
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -41,10 +39,7 @@ def load_video(req: LoadRequest):
     video_id = extract_video_id(req.video_id)
 
     try:
-        proxy_user = os.getenv("WEBSHARE_USERNAME")
-        proxy_pass = os.getenv("WEBSHARE_PASSWORD")
-        proxy = WebshareProxyConfig(proxy_username=proxy_user, proxy_password=proxy_pass) if proxy_user else None
-        ytt = YouTubeTranscriptApi(proxies=proxy)
+        ytt = YouTubeTranscriptApi()
         try:
             fetched = ytt.fetch(video_id, languages=["en", "en-US", "en-GB", "en-IN"])
         except (NoTranscriptFound, Exception):
