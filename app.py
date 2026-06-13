@@ -1,4 +1,6 @@
+import os
 import re
+import tempfile
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -39,7 +41,14 @@ def load_video(req: LoadRequest):
     video_id = extract_video_id(req.video_id)
 
     try:
-        ytt = YouTubeTranscriptApi()
+        cookies_content = os.getenv("YOUTUBE_COOKIES")
+        if cookies_content:
+            tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
+            tmp.write(cookies_content)
+            tmp.close()
+            ytt = YouTubeTranscriptApi(cookies=tmp.name)
+        else:
+            ytt = YouTubeTranscriptApi()
         try:
             fetched = ytt.fetch(video_id, languages=["en", "en-US", "en-GB", "en-IN"])
         except (NoTranscriptFound, Exception):
